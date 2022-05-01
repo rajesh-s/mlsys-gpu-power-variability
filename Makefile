@@ -1,4 +1,4 @@
-all: sgemm dgemm gen_data
+all: sgemm dgemm gen_data cudamemcpy
 
 gen_data: gen_data.cpp
 	g++ -o $@ $<
@@ -9,8 +9,11 @@ sgemm_debug: simple_sgemm.cu
 sgemm: simple_sgemm.cu
 	nvcc -arch=compute_70 -code=sm_70 -o $@ $< -lcurand -lcudart -lcublas
 
+cudamemcpy: cudamemcpy.cu
+	nvcc -arch=compute_70 -code=sm_70 -o $@ $< -lcurand -lcudart -lcublas
+
 dgemm: simple_dgemm.cu
 	nvcc -arch=compute_70 -code=sm_70 -o $@ $< -lcurand -lcudart -lcublas
 
 clean:
-	rm sgemm dgemm
+	rm sgemm dgemm cudamemcpy
