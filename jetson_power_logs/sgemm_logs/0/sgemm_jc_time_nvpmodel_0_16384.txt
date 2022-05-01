@@ -1,0 +1,5 @@
+./collect_power_data.sh: line 35:   912 Terminated              ./log_power_data.sh &> ${application}_jc_power_nvpmodel_${num_model}_${matrix_dim[j]}.tsv
+
+real	12m57.126s
+user	12m33.228s
+sys	0m4.768s
