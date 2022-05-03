@@ -15,8 +15,9 @@
 ## Goals
 
 - Achieve fairness and predictable performance in large cluster deployments for ML training, but not microsecond level predictability. Variations are natural in interactive systems.
-- If GPU0 is most frequently used and is susceptible to wear, can I save money on large scale training by just asking for the 4th GPU always? Idle power example: ![1](images/2022-04-30-16-04-55.png)
-- 
+- If GPU0 is most frequently used and is susceptible to wear, can I save money on large scale training by just asking for the 4th GPU always? Wear levelling for GPUs. Idle power example: ![1](images/2022-04-30-16-04-55.png)
+- Everyone wants 100% utilization and 300W of power, Rowhammer for GPUs, make surrounding GPUs slower?
+- Second order effects: Temperature, cooling, placement in cluster
 
 ## 1. Environment
 
