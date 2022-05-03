@@ -165,8 +165,8 @@ def plot_full_timeline(resnet_raw_path):
                  for f in os.listdir(resnet_raw_path) if "csv" in f}
     df_dict = {k: read_nvprof_gpu_trace(v) for k, v in file_dict.items()}
     case_dir = os.path.basename(os.path.normpath(resnet_raw_path))
-    if not os.path.isdir('../charts/timeline/frequency/' + case_dir):
-        os.mkdir('../charts/timeline/frequency/' + case_dir)
+    if not os.path.isdir('../charts/timeline/temperature/' + case_dir):
+        os.mkdir('../charts/timeline/temperature/' + case_dir)
 
     # Array conttaining the data from two runs on this GPU
     data = []
@@ -192,7 +192,7 @@ def plot_full_timeline(resnet_raw_path):
 
         a = df[(df.Device == GPU)]
         a = a.drop(columns=['Duration', 'Device', 'System',
-                            'Name', 'ones', 'memfreq', 'temp'])
+                            'Name', 'ones', 'memfreq', 'freq'])
         # if cluster == 'tacc':
         #     # a['GPU'] = c009-003-1 (cabinet 9, node 3, GPU 1)
         #     a['GPU'] = li[3] + '-' + device_id
@@ -239,7 +239,7 @@ def plot_full_timeline(resnet_raw_path):
         charts = sns.lineplot(
             x='Start', y='pwr', data=a, lw=5, ax=ax1)
         charts = sns.lineplot(
-            x='Start', y='freq', data=a, lw=5, color='orange', ax=ax2)
+            x='Start', y='temp', data=a, lw=5, color='orange', ax=ax2)
         charts.set(xscale='linear')
         ax1.grid(False)
         ax1.set_xticklabels(ax1.get_xticks(), size=40)
@@ -248,12 +248,12 @@ def plot_full_timeline(resnet_raw_path):
         ax1.set_xlabel('Time (s)', fontsize=35, fontweight=600, labelpad=20)
         ax1.set_ylabel('Power (W)', fontsize=35, fontweight=600,
                        labelpad=20, color='blue')
-        ax2.set_ylabel('Frequency (MHz)', fontsize=35,
+        ax2.set_ylabel('Temperature (C)', fontsize=35,
                        fontweight=600, labelpad=20, color='orange')
         # ax1.legend(handles=[Line2D([], [], color='blue', label='Power (W)'), Line2D(
         #     [], [], color='orange', label='Frequency (MHz)')], loc=(0, 0.85), prop={"size": 24})
         # ax1.legend(frameon=False)
-        plt.savefig('../charts/timeline/frequency/'+ case_dir +'/resnet-on-tacc-freq-pwr-overlay-timeline-' +
+        plt.savefig('../charts/timeline/temperature/'+ case_dir +'/resnet-on-tacc-freq-pwr-overlay-timeline-' +
                     li[5] + '-gpu' + device_id, bbox_inches='tight', dpi=300)
         #            li[3] + '-gpu' + device_id, bbox_inches='tight', dpi=300)
         plt.close()
