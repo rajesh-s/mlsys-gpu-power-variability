@@ -10,7 +10,6 @@
 #include <string>
 #include <sys/stat.h>
 #include <fstream>
-#include <cuda_profiler_api.h>
 using namespace std;
 
 // Function to read data from file
@@ -74,7 +73,7 @@ void fill_cos(float *A, size_t nr_rows_A, size_t nr_cols_A){
 	    A[i + j * nr_rows_A] = cos(float(i + j * nr_rows_A));
 }
 
-int def(int value, int device) {
+int def(int value, int reps, int device) {
 
   cudaSetDevice(device);
   cudaStream_t computeStream;
@@ -89,30 +88,31 @@ int def(int value, int device) {
 
         float *h_C = (float *)malloc(nr_rows_C * nr_cols_C * sizeof(float));
 
-	float *d_A;
+	float *d_A, *d_B;
 	cudaMalloc(&d_A,nr_rows_A * nr_cols_A * sizeof(float));
+	cudaMalloc(&d_B,nr_rows_A * nr_cols_A * sizeof(float));
 
   string fname_A = string("host_A_") + to_string(value) +string(".bin");
   float *h_A = read_from_file(fname_A);
-
+	for(int i=1; i<=reps; i++){
   GpuTimer timer;
     timer.Start();
 	// Optionally we can copy the data back on CPU and print the arrays
 	cudaMemcpyAsync(d_A,h_A,nr_rows_A * nr_cols_A * sizeof(float),cudaMemcpyHostToDevice, computeStream);
+	cudaMemcpyAsync(d_B,h_A,nr_rows_A * nr_cols_A * sizeof(float),cudaMemcpyHostToDevice, computeStream);
 	//std::cout << "A =" << std::endl;
 	//print_matrix(h_A, nr_rows_A, nr_cols_A);
-    timer.Stop();
-	std::cout <<"CudaMemCpy " << i << " Runtime = " << timer.Elapsed() << std::endl;
-  }
-  cudaProfilerStop();
-
+	std::cout <<"CudaMemCpy Runtime = " << timer.Elapsed() << std::endl;
 	// Copy (and print) the result on host memory
 	cudaMemcpyAsync(h_C,d_A,nr_rows_A * nr_cols_A * sizeof(float),cudaMemcpyDeviceToHost, computeStream);
+	cudaMemcpyAsync(h_C,d_B,nr_rows_A * nr_cols_A * sizeof(float),cudaMemcpyDeviceToHost, computeStream);
 	//std::cout << "C =" << std::endl;
 	//print_matrix(h_C, nr_rows_C, nr_cols_C);
-
+    timer.Stop();
+	}
 	//Free GPU memory
 	cudaFree(d_A);
+	cudaFree(d_B);
 
   result = cudaStreamDestroy(computeStream);
 
@@ -133,8 +133,8 @@ int main(int argc, char* argv[]){
 		exit(-1);
 	}
 	int dim = atoi(argv[1]);
-	int device = atoi(argv[2]);
-	//cout << dim <<
-	def(dim, device);
+	int reps = atoi(argv[2]);
+	int device = atoi(argv[3]);
+	def(dim, reps, device);
 	return 0;
 }
