@@ -1,7 +1,7 @@
 # Power Variability on GPUs
 
 - [Goals](#goals)
-- [1. Environment](#1-environment)
+- [1. Getting started](#1-getting-started)
 - [2. Experimental assumptions](#2-experimental-assumptions)
 - [3. Characterization](#3-characterization)
   - [3.1. Base workload: SGEMM](#31-base-workload-sgemm)
@@ -19,13 +19,18 @@
 - Everyone wants 100% utilization and 300W of power, Rowhammer for GPUs, make surrounding GPUs slower?
 - Second order effects: Temperature, cooling, placement in cluster
 
-## 1. Environment
+## 1. Getting started
 
-- Setup CUDA quickly on cloud machines. [Command reference](helper/install_cuda.sh)
-- We designed the experiment space accounting for two things: statistical variation (taking mean between runs) and power variation (actual variation in system parameters we are trying to observe)
+- Setup CUDA on cloud machines. [Command reference](helper/install_cuda.sh)
+- [Optional] If on CloudLab, setup storage using [Command reference](helper/storage.sh)
+- Run ```make``` to compile cuda files
+- ```gen_data 25536``` to generate matrices for SGEMM
+- Standalone: `./sgemm 25536 1 0` or use one of the run*.sh scripts to orchestrate parallel runs
+- For simultaneous runs, setup noise workloads as outlined below and use the launch scripts
 
 ## 2. Experimental assumptions
 
+- We designed the experiment space accounting for two things: statistical variation (taking mean between runs) and power variation (actual variation in system parameters we are trying to observe)
 - Run nvprof on all to ensure the same overheads across GPUs. Also, nvprof continuous collection does not capture kernel details running on other GPUs but still captures temperature, frequency, voltage on other GPUs
 - V100 does not support disabling autoboost. We observed overshoot about 300W upto 325W in many cases. ![1](images/2022-04-30-13-56-09.png)
 
